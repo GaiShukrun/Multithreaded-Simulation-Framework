@@ -1,4 +1,4 @@
-# Racing Simulation Game
+# Multithreaded Racing Simulation Framework
 
 **Authors:** Gai Shukrun (315809863) & Vlad Forman (206818239)
 
@@ -17,9 +17,8 @@ This is a comprehensive Java-based racing simulation game that demonstrates mult
 ## 📁 Project Structure
 
 ```
-Java Project/
-├── GuiHM2/           # GUI Components & Main Interface
-├── Hm3/              # State Pattern Implementation
+├── GUI/              # GUI Components & Main Interface
+├── States/           # State Pattern Implementation
 ├── factory/          # Factory Pattern for Dynamic Object Creation
 ├── game/             # Core Game Logic
 │   ├── arenas/       # Racing Arena Types
@@ -55,14 +54,14 @@ Java Project/
 ### Running the Application
 1. Compile all Java files
 2. Run the main class: `utilities.Program`
-3. For GUI interface: Run `GuiHM2.MainScreen`
+3. For GUI interface: Run `GUI.MainScreen`
 
 ## 🎯 Core Components
 
 ### Factory Pattern (`factory/`)
 - **RaceBuilder.java** - Singleton factory for creating racers and arenas dynamically
 
-### State Pattern (`Hm3/`)
+### State Pattern (`States/`)
 - **RacerState.java** - Interface defining state behavior
 - **ActiveState.java** - Racer actively racing
 - **BrokenState.java** - Racer temporarily disabled
@@ -80,7 +79,7 @@ Java Project/
 - **Fate.java** - Random event generation
 - **Mishap.java** - Race incident management
 
-## 🎨 GUI Features (`GuiHM2/`)
+## 🎨 GUI Features (`GUI/`)
 - Interactive race setup and management
 - Real-time race visualization
 - Racer statistics and information display
