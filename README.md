@@ -33,9 +33,63 @@ A comprehensive Java-based racing simulation demonstrating advanced design patte
 
 </div>
 
-## Overview
+## Project Overview
 
-The Multithreaded Racing Simulation Framework transforms complex racing mechanics into an interactive, educational platform. Built with advanced Java concepts and design patterns, it provides computer science students, developers, and educators with a comprehensive example of object-oriented programming principles, design pattern implementation, and GUI development using Java Swing.
+This project is a multithreaded racing simulation built in Java. It uses a Swing GUI to visualize a race where multiple racers compete in different types of arenas. The core of the project demonstrates the practical application of several key software engineering concepts.
+
+### Core Concepts Implemented
+
+Here is a breakdown of the specific programming concepts and design patterns used in this project:
+
+#### 1. State Design Pattern
+
+This pattern is used to manage the changing condition of a `Racer` during the race.
+
+-   **`RacerState` Interface**: Defines the common contract for all states.
+-   **Concrete States**: You have implemented four states:
+    -   `ActiveState`: For a racer that is currently racing.
+    -   `BrokenState`: For a racer that has a temporary mishap.
+    -   `FailedState`: For a racer that can no longer continue the race.
+    -   `FinishedState`: For a racer that has crossed the finish line.
+-   **Context**: The `Racer` class holds a `RacerState` object. The state is changed dynamically within the `RaceRunnable` based on events like mishaps or finishing the race.
+
+#### 2. Concurrency and Multithreading
+
+This is used to make all racers move simultaneously and independently.
+
+-   **`Runnable` and `Thread`**: The `RaceRunnable` class implements `Runnable`, and each racer is executed on its own `Thread`.
+-   **Concurrency Control**: You used `java.util.concurrent.locks.ReentrantLock` to prevent race conditions.
+    -   Three separate locks (`l1`, `l2`, `l3`) are used in `RaceRunnable` to protect shared resources during critical operations like calculating finishing place, updating racer state, and calculating movement.
+
+#### 3. Factory Design Pattern (with Reflection)
+
+This pattern is used to create `Arena` and `Racer` objects without hardcoding their class names.
+
+-   **`RaceBuilder` Singleton**: This class acts as the central factory.
+-   **Java Reflection**: The factory uses `ClassLoader.getSystemClassLoader().loadClass()` and `constructor.newInstance()` to create objects from class name strings passed from the GUI. This makes the system extensible, as new racer or arena types can be added without changing the factory's core logic.
+
+#### 4. Observer Design Pattern
+
+This pattern is used to update the GUI with live race data without creating a direct dependency between the game logic and the UI.
+
+-   **`MyObserver` and `MyObservable`**: You created custom observer/observable interfaces.
+-   **Implementation**: The `Arena` is the observable object that maintains a list of observers. The `MainScreen` is the observer. When a racer's data changes in its thread, it calls `arena.notifyObservers()`, which pushes the new data to the GUI to be displayed in the information table.
+
+#### 5. Prototype Design Pattern
+
+This pattern is used to create new `Racer` objects by copying an existing one.
+
+-   **`Cloneable` Interface**: The abstract `Racer` class implements `Cloneable`.
+-   **Implementation**: The `MainScreen` provides a feature to "Add From Existing Racer". This works by calling the `clone()` method on a selected racer prototype, creating a new object with the same attributes, which can then be customized (e.g., color) and added to the race.
+
+#### 6. Object-Oriented Programming (OOP)
+
+The project is built on a solid foundation of OOP principles.
+
+-   **Inheritance**: You have created deep inheritance hierarchies for both arenas and racers (e.g., `Racer` -> `LandRacer` -> `Car`).
+-   **Polymorphism**: The main simulation loop operates on abstract `Racer` and `Arena` objects, but the specific behavior (like movement or legal racer checks) is determined by the concrete subclasses at runtime.
+-   **Abstraction**: `Arena` and `Racer` are abstract classes, defining common behaviors and attributes for all types of arenas and racers.
+-   **Encapsulation**: All class properties are private, with access controlled through public getter and setter methods.
 
 
 ## Application Screenshots
