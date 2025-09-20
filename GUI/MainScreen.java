@@ -47,8 +47,21 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  */
 public class MainScreen extends JFrame implements ActionListener,MyObserver{
-    int IconWidth = 50;
-    int IconHight =50;
+    static int IconWidth = 50;
+    static int IconHight =50;
+    
+    // Track positioning constants based on LandArena.jpg analysis
+    static final int TRACK_START_Y = 127;  // Y position where racing lanes start
+    static final int TRACK_END_Y = 700;    // Y position where racing lanes end  
+    static final int LANE_HEIGHT = 31;     // Height of each racing lane
+    static final int START_LINE_X = 14;    // X position of start line
+    static final int TRACK_WIDTH = 1580;   // Width of racing area
+    // Calculate finish line position as percentage of arena width (95% of arena + icon width for complete crossing)
+    public static int getVisualFinishLineX(int arenaLength) {
+        int panelWidth = arenaLength + 110;  // Panel width as set in displayPanel.setPreferredSize
+        int finishLineStart = (int)(panelWidth * 0.95);  // Finish line at 95% of panel width
+        return finishLineStart + IconWidth;  // Add icon width so entire icon crosses finish line
+    }
     private  static  int index1 =0;
     private static int index2=0;
     List<Thread> threads = new ArrayList<>();
@@ -285,10 +298,10 @@ public class MainScreen extends JFrame implements ActionListener,MyObserver{
                     this.icon = new ImageIcon(fittedImg);
                     JLabel imgLabel = new JLabel();
                     imgLabel.setIcon(this.icon);
-                    imgLabel.setBounds(0, index1, IconWidth, IconHight);
-                    Point p = new Point(0, index1);
+                    int laneY = calculateLaneYPosition(index2);
+                    imgLabel.setBounds(START_LINE_X, laneY, IconWidth, IconHight);
+                    Point p = new Point(START_LINE_X, laneY);
                     arena.getActiveRacers().get(index2).setCurrentLocation(p);
-                    index1 += IconHight;
                     index2++;
                     displayPanel.add(imgLabel);
                     displayPanel.repaint();
@@ -324,7 +337,7 @@ public class MainScreen extends JFrame implements ActionListener,MyObserver{
         } else if (e.getSource() == startRaceBtn) {
             threads = new ArrayList<>();
             DefaultTableModel model = new DefaultTableModel(columnNames, arena.getActiveRacers().size());
-            Point p = new Point(displayPanel.getWidth() - rightPanel.getWidth() + 50, IconHight);
+            Point p = new Point(VISUAL_FINISH_LINE_X, IconHight); // Finish line position at visual finish line
             for (int i = 0; i < arena.getActiveRacers().size(); i++) {
                 threads.add(new Thread(new RaceRunnable(arena, displayPanel, arena.getActiveRacers().get(i), i, p)));
             }
@@ -396,10 +409,10 @@ public class MainScreen extends JFrame implements ActionListener,MyObserver{
                                 this.icon = new ImageIcon(fittedImg);
                                 JLabel imgLabel = new JLabel();
                                 imgLabel.setIcon(this.icon);
-                                imgLabel.setBounds(0, index1, IconWidth, IconHight);
-                                Point p = new Point(0, index1);
+                                int laneY = calculateLaneYPosition(index2);
+                                imgLabel.setBounds(START_LINE_X, laneY, IconWidth, IconHight);
+                                Point p = new Point(START_LINE_X, laneY);
                                 arena.getActiveRacers().get(index2).setCurrentLocation(p);
-                                index1 += IconHight;
                                 index2++;
                                 displayPanel.add(imgLabel);
                                 displayPanel.repaint();
@@ -504,10 +517,10 @@ public class MainScreen extends JFrame implements ActionListener,MyObserver{
                             this.icon = new ImageIcon(fittedImg);
                             JLabel imgLabel = new JLabel();
                             imgLabel.setIcon(this.icon);
-                            imgLabel.setBounds(0, index1, IconWidth, IconHight);
-                            Point p = new Point(0, index1);
+                            int laneY = calculateLaneYPosition(index2);
+                            imgLabel.setBounds(START_LINE_X, laneY, IconWidth, IconHight);
+                            Point p = new Point(START_LINE_X, laneY);
                             arena.getActiveRacers().get(index2).setCurrentLocation(p);
-                            index1 += IconHight;
                             index2++;
                             displayPanel.add(imgLabel);
                             displayPanel.repaint();
@@ -662,6 +675,15 @@ public class MainScreen extends JFrame implements ActionListener,MyObserver{
     }
 
     /**
+     * Calculate the Y position for a vehicle based on its lane number
+     * @param laneNumber The lane number (0-based, 0 = first lane)
+     * @return Y position for the vehicle center
+     */
+    public static int calculateLaneYPosition(int laneNumber) {
+        return TRACK_START_Y + (laneNumber * LANE_HEIGHT) + (LANE_HEIGHT / 2) - (IconHight / 2);
+    }
+    
+    /**
      * load the images from the folder using IMAGES_PATH
      * @param filename
      */
@@ -698,7 +720,16 @@ public class MainScreen extends JFrame implements ActionListener,MyObserver{
         MainScreen Frame1 = new MainScreen();
         Frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Frame1.add(Frame1.mainPanel);
-        Frame1.pack();
+        
+        // Get screen dimensions and set window to full screen size
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Frame1.setSize(screenSize);
+        Frame1.setLocationRelativeTo(null); // Center the window
+        
+        // Alternative: Try both approaches
+        Frame1.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        
+        // Make visible
         Frame1.setVisible(true);
     }
 }
@@ -713,6 +744,7 @@ class myPanel extends  JPanel{
     private  int Width=1000;
     public myPanel() {
         super();
+        setLayout(null); // Use absolute positioning to prevent layout manager interference
        setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(""),
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));
@@ -805,7 +837,7 @@ class RaceRunnable implements Runnable {
         int WidthArenaRatio = (int)((point.getX() - arena.getLength())) ;
         Object[][] newData = new Object[arena.getActiveRacers().size()][5];
         racers.setState(new ActiveState());
-        while (racers.getCurrentLocation().getX() < arena.getLength() ) {
+        while (racers.getCurrentLocation().getX() < point.getX() ) {
             l3.lock();
             racers.move(arena.getFRICTION());
             l3.unlock();
@@ -824,13 +856,13 @@ class RaceRunnable implements Runnable {
                 }
             }
 
-            if (racers.getCurrentLocation().getX() >= arena.getLength()) {
-                displayPanel.getComponent(i).setBounds((int)point.getX() , (int) racers.getCurrentLocation().getY(), (int)point.getY(), (int)point.getY());
+            if (racers.getCurrentLocation().getX() >= point.getX()) {
+                displayPanel.getComponent(i).setBounds((int) racers.getCurrentLocation().getX(), (int) racers.getCurrentLocation().getY(), MainScreen.IconWidth, MainScreen.IconHight);
                 newData[i][0] = racers.getRacerName();
                 newData[i][1] = racers.getCurrentSpeed();
                 newData[i][2] = racers.getMaxSpeed();
-                newData[i][3] = arena.getLength();
-                newData[i][4] = (racers.getCurrentLocation().getX() >= arena.getLength()) ? "Yes" : "No";
+                newData[i][3] = point.getX();
+                newData[i][4] = (racers.getCurrentLocation().getX() >= point.getX()) ? "Yes" : "No";
                 arena.notifyObservers(new RacerData(newData,i));
 
             }
@@ -844,13 +876,13 @@ class RaceRunnable implements Runnable {
                     racers.setState(new ActiveState());
                 }
                 l2.unlock();
-                displayPanel.getComponent(i).setBounds((int) racers.getCurrentLocation().getX(), (int) racers.getCurrentLocation().getY(), (int)point.getY(), (int)point.getY());
+                displayPanel.getComponent(i).setBounds((int) racers.getCurrentLocation().getX(), (int) racers.getCurrentLocation().getY(), MainScreen.IconWidth, MainScreen.IconHight);
                 displayPanel.getComponent(i).repaint();
                 newData[i][0] = racers.getRacerName();
                 newData[i][1] = racers.getCurrentSpeed();
                 newData[i][2] = racers.getMaxSpeed();
                 newData[i][3] = racers.getCurrentLocation().getX();
-                newData[i][4] = (racers.getCurrentLocation().getX() > arena.getLength()) ? "Yes" : "No";
+                newData[i][4] = (racers.getCurrentLocation().getX() > point.getX()) ? "Yes" : "No";
                 arena.notifyObservers(new RacerData(newData,i));
 
             }
@@ -864,10 +896,10 @@ class RaceRunnable implements Runnable {
             newData[i][0] = racers.getRacerName();
             newData[i][1] = racers.getCurrentSpeed();
             newData[i][2] = racers.getMaxSpeed();
-            newData[i][3] = arena.getLength();
-            newData[i][4] = (racers.getCurrentLocation().getX() >= arena.getLength()) ? "Yes" : "No";
+            newData[i][3] = point.getX();
+            newData[i][4] = (racers.getCurrentLocation().getX() >= point.getX()) ? "Yes" : "No";
             arena.notifyObservers(new RacerData(newData,i));
-            displayPanel.getComponent(i).setBounds((int)point.getX(), (int) racers.getCurrentLocation().getY(), (int)point.getY(), (int)point.getY());
+            displayPanel.getComponent(i).setBounds((int) racers.getCurrentLocation().getX(), (int) racers.getCurrentLocation().getY(), MainScreen.IconWidth, MainScreen.IconHight);
             displayPanel.getComponent(i).repaint();
             displayPanel.repaint();
 
