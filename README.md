@@ -40,7 +40,7 @@ The Multithreaded Racing Simulation Framework transforms complex racing mechanic
 
 ## Application Screenshots
 
-*Screenshots will be added by the user*
+![ScreenShot](GUI/icons/ReadMe.png)
 
 ## Core Features
 
