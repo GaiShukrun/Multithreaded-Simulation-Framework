@@ -6,7 +6,7 @@ A comprehensive Java-based racing simulation demonstrating advanced design patte
 
 <div align="center">
 
-**Authors:** Gai Shukrun (315809863) & Vlad Forman (206818239)
+**Authors:** Gai Shukrun 
 
 [![Java](https://img.shields.io/badge/java-8+-orange)]()
 [![Swing](https://img.shields.io/badge/swing-GUI-blue)]()
@@ -37,9 +37,6 @@ A comprehensive Java-based racing simulation demonstrating advanced design patte
 
 The Multithreaded Racing Simulation Framework transforms complex racing mechanics into an interactive, educational platform. Built with advanced Java concepts and design patterns, it provides computer science students, developers, and educators with a comprehensive example of object-oriented programming principles, design pattern implementation, and GUI development using Java Swing.
 
-<H2>🚀 Demo</H2>
-
-*Screenshots will be added here*
 
 ## Application Screenshots
 
