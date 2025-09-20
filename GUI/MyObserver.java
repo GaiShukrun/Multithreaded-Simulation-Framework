@@ -1,4 +1,4 @@
-package GuiHM2;
+package GUI;
 /**
  * Gai Shukrun 315809863 + Vlad Furman 206818239
  */

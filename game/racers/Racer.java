@@ -4,9 +4,9 @@
  */
 package game.racers;
 
-import Hm3.ActiveState;
-import Hm3.BrokenState;
-import Hm3.RacerState;
+import States.ActiveState;
+import States.BrokenState;
+import States.RacerState;
 import utilities.Fate;
 import utilities.Mishap;
 import utilities.Point;

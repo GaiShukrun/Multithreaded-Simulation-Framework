@@ -2,8 +2,8 @@
  * Gai Shukrun 315809863 + Vlad Furman 206818239
  */
 
-package GuiHM2;
-import Hm3.*;
+package GUI;
+import States.*;
 import factory.RaceBuilder;
 import game.arenas.Arena;
 import game.arenas.exceptions.RacerLimitException;
@@ -52,7 +52,7 @@ public class MainScreen extends JFrame implements ActionListener,MyObserver{
     private  static  int index1 =0;
     private static int index2=0;
     List<Thread> threads = new ArrayList<>();
-    final static  String IMAGES_PATH = "src/GuiHM2/icons";
+    final static  String IMAGES_PATH = "GUI/icons";
     private static Arena arena;
     private static RaceBuilder builder = RaceBuilder.getInstance();
     private  Racer racers ;
@@ -545,29 +545,35 @@ public class MainScreen extends JFrame implements ActionListener,MyObserver{
      */
     public void FactoryMethod(String arenaType,int ArenaLength,int MaxRacers ){
         RaceBuilder builder = RaceBuilder.getInstance();
-        if (arenaType == "AerialArena") {
+        if (arenaType.equals("AerialArena")) {
             try {
                 arena = builder.buildArena("game.arenas.air.AerialArena", ArenaLength, MaxRacers);
+                System.out.println("Aerial Arena created successfully!");
             } catch (ClassNotFoundException | NoSuchMethodException | SecurityException |
                      InstantiationException
                      | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
-                System.out.println("Unable to build arena!");
+                System.out.println("Unable to build arena: " + e1.getMessage());
+                e1.printStackTrace();
             }
-        } else if (arenaType == "LandArena") {
+        } else if (arenaType.equals("LandArena")) {
             try {
                 arena = builder.buildArena("game.arenas.land.LandArena", ArenaLength, MaxRacers);
+                System.out.println("Land Arena created successfully!");
             } catch (ClassNotFoundException | NoSuchMethodException | SecurityException |
                      InstantiationException
                      | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
-                System.out.println("Unable to build arena!");
+                System.out.println("Unable to build arena: " + e1.getMessage());
+                e1.printStackTrace();
             }
-        } else if (arenaType == "NavalArena") {
+        } else if (arenaType.equals("NavalArena")) {
             try {
                 arena = builder.buildArena("game.arenas.naval.NavalArena", ArenaLength, MaxRacers);
+                System.out.println("Naval Arena created successfully!");
             } catch (ClassNotFoundException | NoSuchMethodException | SecurityException |
                      InstantiationException
                      | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
-                System.out.println("Unable to build arena!");
+                System.out.println("Unable to build arena: " + e1.getMessage());
+                e1.printStackTrace();
             }
         }
     }
@@ -663,18 +669,28 @@ public class MainScreen extends JFrame implements ActionListener,MyObserver{
         String imagePath;
         try {
             if(filename.contains("Arena")) {
-                 imagePath = IMAGES_PATH + "//" + filename + ".JPG";
+                 imagePath = IMAGES_PATH + "/" + filename + ".jpg";
                 File imageFile = new File(imagePath);
                 if(imageFile.exists()) {
                     this.image = ImageIO.read(imageFile);
+                    System.out.println("Arena image loaded successfully: " + imagePath);
+                } else {
+                    System.out.println("Arena image not found: " + imagePath);
                 }
             }
             else{
-                imagePath = IMAGES_PATH + "//" + filename + ".PNG";
-                ImageIcon icon = new ImageIcon(imagePath);
-                this.icon = icon;
+                imagePath = IMAGES_PATH + "/" + filename + ".png";
+                File imageFile = new File(imagePath);
+                if(imageFile.exists()) {
+                    ImageIcon icon = new ImageIcon(imagePath);
+                    this.icon = icon;
+                    System.out.println("Racer image loaded successfully: " + imagePath);
+                } else {
+                    System.out.println("Racer image not found: " + imagePath);
+                }
             }
         } catch (IOException e) {
+            System.out.println("Error loading image: " + e.getMessage());
             e.printStackTrace();
         }
     }

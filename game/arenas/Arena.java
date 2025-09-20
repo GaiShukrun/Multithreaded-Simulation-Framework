@@ -2,10 +2,10 @@
  * Gai Shukrun : 315809863 , Vlad Forman : 206818239
  */package game.arenas;
 
-import GuiHM2.MyObserver;
-import Hm3.ActiveState;
-import Hm3.BrokenState;
-import Hm3.FinishedState;
+import GUI.MyObserver;
+import States.ActiveState;
+import States.BrokenState;
+import States.FinishedState;
 import game.arenas.exceptions.RacerLimitException;
 import game.arenas.exceptions.RacerTypeException;
 import game.racers.Racer;
